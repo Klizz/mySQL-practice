@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const mysqlConnection = require('../database');
+const connection = require('../database');
 
 router.get('/', (req, res) => {
-    mysqlConnection.query('SELECT * FROM product', (err, rows, fields) => {
+   connection.query('SELECT * FROM product', (err, rows) => {
         if (!err) {
             res.json(rows);
         } else {
@@ -15,8 +15,8 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const { id } = req.params;
-    mysqlConnection.query('SELECT * FROM product WHERE id = ?', [id], (err, 
-        rows, fields) => {
+    connection.query('SELECT * FROM product WHERE id = ?', [id], (err, 
+        rows) => {
         if (!err) {
             res.json(rows);
         } else {
@@ -32,12 +32,13 @@ router.post('/products', (req, res) => {
         stock,
         status
     } = req.body;
-    mysqlConnection.query(`INSERT INTO product (name, value, stock, status) VALUES (?, ?, ?, ?)`, [name,
-    value, stock, status], (err, result) => {
+    connection.query('INSERT INTO product (name, value, stock, status) VALUES (?, ?, ?, ?)', [name, value, 
+        stock, status], (err, result) => {
+        console.log(result);
         if (err) {
             res.json({ status: 'error', msg: err.message });
         } else {
-            res.json({ status: 'ok', result: result.insertId })
+            res.json({ status: 'ok', result: result })
         }
     });
 });
